@@ -1,0 +1,55 @@
+package store.domain;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+public class ConvenienceStore {
+
+    private final Map<String, List<Product>> inventory;
+
+    public ConvenienceStore() {
+        this.inventory = new LinkedHashMap<>();
+        loadProductsFromFile();
+    }
+
+    private void loadProductsFromFile() {
+        try (BufferedReader br = new BufferedReader(new FileReader("src/main/resources/products.md"))) {
+            String line = br.readLine();
+
+            while ((line = br.readLine()) != null) {
+                String[] fields = line.split(",");
+
+                String name = fields[0];
+                int price = Integer.parseInt(fields[1]);
+                int quantity = Integer.parseInt(fields[2]);
+                String promotionName = fields[3];
+
+                Promotion promotion = findPromotionByName(promotionName);
+
+                inventory.computeIfAbsent(name, key -> new ArrayList<>())
+                        .add(new Product(name, price, quantity, promotion));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Map<String, List<Product>> getInventory() {
+        return Collections.unmodifiableMap(inventory);
+    }
+
+    private Promotion findPromotionByName(String name) {
+        PromotionManager promotions = PromotionManager.getInstance();
+        if (name.equals("null")) {
+            return null;
+        }
+        return promotions.getPromotion(name);
+    }
+
+}
