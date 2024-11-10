@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class PromotionManager {
 
-    private static final Map<String, Promotion> promotions = new HashMap<>();
+    private final Map<String, Promotion> promotions = new HashMap<>();
 
     private static class PromotionManagerHolder {
         private static final PromotionManager INSTANCE = new PromotionManager();
@@ -21,14 +21,17 @@ public class PromotionManager {
 
     private void loadPromotionsFromFile() {
         try (BufferedReader br = new BufferedReader(new FileReader("src/main/resources/promotions.md"))) {
-            String line;
+            String line = br.readLine();
+
             while ((line = br.readLine()) != null) {
                 String[] fields = line.split(",");
+
                 String name = fields[0];
                 int buy = Integer.parseInt(fields[1]);
                 int get = Integer.parseInt(fields[2]);
                 LocalDate startDate = LocalDate.parse(fields[3]);
                 LocalDate endDate = LocalDate.parse(fields[4]);
+
                 promotions.put(name, new Promotion(name, buy, get, startDate, endDate));
             }
         } catch (IOException e) {
@@ -40,7 +43,8 @@ public class PromotionManager {
         return PromotionManagerHolder.INSTANCE;
     }
 
-    public static Promotion getPromotion(String name) {
+    public Promotion getPromotion(String name) {
         return promotions.get(name);
     }
+
 }
