@@ -1,5 +1,6 @@
 package store.controller;
 
+import java.util.Map;
 import store.domain.ConvenienceStore;
 import store.view.InputView;
 import store.view.OutputView;
@@ -18,6 +19,7 @@ public class ConvenienceStoreController {
 
     public void run() {
         outputView.displayConvenienceStore(store);
+        Map<String, Integer> productsToPurchase = inputView.inputProductNameAndQuantity();
 
              /*
              1. 보유한 편의점 상품 진열 - Store - LinkedHashMap<String, List<Product>>
