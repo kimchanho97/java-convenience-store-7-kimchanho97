@@ -13,4 +13,20 @@ public class Product {
         this.quantity = quantity;
         this.promotion = promotion;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getPrice() {
+        return price;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public Promotion getPromotion() {
+        return promotion;
+    }
 }
