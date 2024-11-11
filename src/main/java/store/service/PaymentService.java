@@ -1,5 +1,7 @@
 package store.service;
 
+import static store.constant.Answer.YES;
+
 import camp.nextstep.edu.missionutils.DateTimes;
 import java.util.Map;
 import store.constant.Answer;
@@ -27,18 +29,18 @@ public class PaymentService {
             Product product = entry.getKey();
             Integer quantity = entry.getValue();
 
-            product.reduceStock(quantity);
-            int productTotalAmount = product.calculateTotalAmount(quantity);
+            product.reduceQuantity(quantity);
+            int productTotalAmount = quantity * product.getPrice();
             totalAmount += productTotalAmount;
 
             if (product.hasActivePromotion(DateTimes.now())) {
-                promotionDiscount += product.getPromotionQuantity(quantity) * product.getPrice();
+                promotionDiscount += product.getFreeQuantity(quantity) * product.getPrice();
             } else {
                 nonPromotionAmount += productTotalAmount;
             }
         }
 
-        if (isMembershipDiscount == Answer.YES) {
+        if (isMembershipDiscount == YES) {
             membershipDiscount = calculateMembershipDiscount(nonPromotionAmount);
         }
 
@@ -49,7 +51,7 @@ public class PaymentService {
 
     private int calculateMembershipDiscount(int nonPromotionAmount) {
         int membershipDiscount = (int) (nonPromotionAmount * 0.3);
-        return Math.min(membershipDiscount, 8000); // 최대 8000원 제한 적용
+        return Math.min(membershipDiscount, 8000);
     }
 
 }

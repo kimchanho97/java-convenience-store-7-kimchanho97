@@ -1,10 +1,10 @@
 package store.domain;
 
-import static store.exception.message.CartExceptionMessage.EXCEEDS_STOCK_QUANTITY;
+import static store.exception.message.PaymentExceptionMessage.PAYMENT_FAILED_INSUFFICIENT_QUANTITY;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
-import store.exception.CustomException.ExceedStockQuantityException;
+import store.exception.CustomException.PaymentFailedException;
 
 public class Product implements Comparable<Product> {
 
@@ -29,31 +29,30 @@ public class Product implements Comparable<Product> {
             return 0;
         }
 
-        int applicablePromotionSets = 0;
-        int remainingRequestedQuantity = requestedQuantity;
+        int eligiblePromotionSets = 0;
+        int remainingQuantity = requestedQuantity;
         int promotionSetSize = promotion.getBuy() + promotion.getGet();
 
-        while (remainingRequestedQuantity >= promotion.getBuy()) {
-            applicablePromotionSets += 1;
-            remainingRequestedQuantity -= promotionSetSize;
+        while (remainingQuantity >= promotion.getBuy()) {
+            eligiblePromotionSets += 1;
+            remainingQuantity -= promotionSetSize;
         }
 
-        return Math.min(quantity / promotionSetSize, applicablePromotionSets) * promotionSetSize;
+        return Math.min(quantity / promotionSetSize, eligiblePromotionSets) * promotionSetSize;
     }
 
-    public int calculateTotalAmount(int requestedQuantity) {
-        return price * requestedQuantity;
-    }
-
-    public void reduceStock(int requestedQuantity) {
+    public void reduceQuantity(int requestedQuantity) {
         if (quantity < requestedQuantity) {
-            throw new ExceedStockQuantityException(EXCEEDS_STOCK_QUANTITY);
+            throw new PaymentFailedException(PAYMENT_FAILED_INSUFFICIENT_QUANTITY);
         }
         quantity -= requestedQuantity;
     }
 
-    public int getPromotionQuantity(int requestedQuantity) {
-        return promotion.calculateFreeQuantity(requestedQuantity);
+    public int getFreeQuantity(int requestedQuantity) {
+        if (promotion == null) {
+            return 0;
+        }
+        return promotion.getFreeQuantity(requestedQuantity);
     }
 
     public String getName() {

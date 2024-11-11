@@ -22,9 +22,16 @@ public class CustomException extends IllegalArgumentException {
         }
     }
 
-    public static class ExceedStockQuantityException extends CustomException {
+    public static class InsufficientQuantityException extends CustomException {
 
-        public ExceedStockQuantityException(ExceptionMessage message) {
+        public InsufficientQuantityException(ExceptionMessage message) {
+            super(message);
+        }
+    }
+
+    public static class PaymentFailedException extends CustomException {
+
+        public PaymentFailedException(ExceptionMessage message) {
             super(message);
         }
     }

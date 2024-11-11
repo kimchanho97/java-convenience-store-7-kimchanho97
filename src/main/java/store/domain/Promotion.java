@@ -18,6 +18,14 @@ public class Promotion {
         this.endDate = endDate;
     }
 
+    public boolean isActive(LocalDateTime date) {
+        return date.isAfter(startDate) && date.isBefore(endDate);
+    }
+
+    public int getFreeQuantity(int requestedQuantity) {
+        return (requestedQuantity / (buy + get)) * get;
+    }
+
     public String getName() {
         return name;
     }
@@ -28,13 +36,5 @@ public class Promotion {
 
     public int getGet() {
         return get;
-    }
-
-    public boolean isActive(LocalDateTime date) {
-        return date.isAfter(startDate) && date.isBefore(endDate);
-    }
-
-    public int calculateFreeQuantity(int requestedQuantity) {
-        return (requestedQuantity / (buy + get)) * get;
     }
 }

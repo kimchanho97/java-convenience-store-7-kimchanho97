@@ -1,7 +1,7 @@
 package store.controller;
 
 import static store.constant.Answer.YES;
-import static store.exception.message.CartExceptionMessage.EXCEEDS_STOCK_QUANTITY;
+import static store.exception.message.CartExceptionMessage.INSUFFICIENT_QUANTITY;
 import static store.exception.message.CartExceptionMessage.NOT_FOUND_PRODUCT;
 
 import java.util.Map;
@@ -9,7 +9,7 @@ import store.constant.Answer;
 import store.domain.Cart;
 import store.domain.ConvenienceStore;
 import store.domain.Receipt;
-import store.exception.CustomException.ExceedStockQuantityException;
+import store.exception.CustomException.InsufficientQuantityException;
 import store.exception.CustomException.NotFoundProductException;
 import store.service.CartService;
 import store.service.PaymentService;
@@ -56,7 +56,7 @@ public class ConvenienceStoreController {
     private void validatePurchaseItems(Map<String, Integer> itemsToPurchase) {
         for (Map.Entry<String, Integer> entry : itemsToPurchase.entrySet()) {
             checkProductExists(entry.getKey());
-            checkSufficientStockForPurchase(entry.getKey(), entry.getValue());
+            checkSufficientQuantityForPurchase(entry.getKey(), entry.getValue());
         }
     }
 
@@ -66,9 +66,9 @@ public class ConvenienceStoreController {
         }
     }
 
-    private void checkSufficientStockForPurchase(String name, Integer quantityToPurchase) {
+    private void checkSufficientQuantityForPurchase(String name, Integer quantityToPurchase) {
         if (!store.hasSufficientQuantity(name, quantityToPurchase)) {
-            throw new ExceedStockQuantityException(EXCEEDS_STOCK_QUANTITY);
+            throw new InsufficientQuantityException(INSUFFICIENT_QUANTITY);
         }
     }
 
@@ -81,8 +81,9 @@ public class ConvenienceStoreController {
     }
 
     private Receipt processCheckout(Cart cart) {
-        Answer isMembershipDiscount = exceptionHandler.retry(inputView::askToApplyMembership);
-        return new PaymentService(isMembershipDiscount, cart).checkout();
+        Answer isMembershipDiscountApplied = exceptionHandler.retry(inputView::askToApplyMembership);
+        PaymentService paymentService = new PaymentService(isMembershipDiscountApplied, cart);
+        return exceptionHandler.process(paymentService::checkout);
     }
 
     private boolean hasAdditionalPurchase() {

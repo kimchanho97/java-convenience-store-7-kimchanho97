@@ -56,7 +56,7 @@ public class Receipt {
             Product product = entry.getKey();
             int quantity = entry.getValue();
             if (product.getPromotion() != null) {
-                int freeQuantity = product.getPromotionQuantity(quantity);
+                int freeQuantity = product.getFreeQuantity(quantity);
                 promotionMap.merge(product.getName(), freeQuantity, Integer::sum);
             }
         }

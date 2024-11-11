@@ -3,6 +3,7 @@ package store.controller;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 import store.exception.CustomException;
+import store.exception.CustomException.PaymentFailedException;
 import store.view.OutputView;
 
 public class ExceptionHandler {
@@ -33,6 +34,15 @@ public class ExceptionHandler {
                 }
             }
         };
+    }
+
+    public <T> T process(Supplier<T> supplier) {
+        try {
+            return supplier.get();
+        } catch (PaymentFailedException e) {
+            outputView.printExceptionMessage(e.getMessage());
+        }
+        return null;
     }
 
 }
