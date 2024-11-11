@@ -1,16 +1,16 @@
 package store.domain;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class Promotion {
 
     private final String name;
     private final int buy;
     private final int get;
-    private final LocalDate startDate;
-    private final LocalDate endDate;
+    private final LocalDateTime startDate;
+    private final LocalDateTime endDate;
 
-    public Promotion(String name, int buy, int get, LocalDate startDate, LocalDate endDate) {
+    public Promotion(String name, int buy, int get, LocalDateTime startDate, LocalDateTime endDate) {
         this.name = name;
         this.buy = buy;
         this.get = get;
@@ -30,7 +30,11 @@ public class Promotion {
         return get;
     }
 
-    public boolean isActivePromotion(LocalDate date) {
+    public boolean isActive(LocalDateTime date) {
         return date.isAfter(startDate) && date.isBefore(endDate);
+    }
+
+    public int calculateFreeQuantity(int requestedQuantity) {
+        return (requestedQuantity / (buy + get)) * get;
     }
 }
