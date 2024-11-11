@@ -29,16 +29,16 @@ public class Product implements Comparable<Product> {
             return 0;
         }
 
-        int eligiblePromotionSets = 0;
+        int availablePromotionSetCount = 0;
         int remainingQuantity = requestedQuantity;
         int promotionSetSize = promotion.getBuy() + promotion.getGet();
 
         while (remainingQuantity >= promotion.getBuy()) {
-            eligiblePromotionSets += 1;
+            availablePromotionSetCount += 1;
             remainingQuantity -= promotionSetSize;
         }
 
-        return Math.min(quantity / promotionSetSize, eligiblePromotionSets) * promotionSetSize;
+        return Math.min(quantity / promotionSetSize, availablePromotionSetCount) * promotionSetSize;
     }
 
     public void reduceQuantity(int requestedQuantity) {

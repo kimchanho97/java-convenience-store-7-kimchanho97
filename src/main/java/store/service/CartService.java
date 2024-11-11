@@ -72,9 +72,9 @@ public class CartService {
                 break;
             }
 
-            int quantityToAdd = Math.min(remainingQuantity, product.getQuantity());
-            remainingQuantity -= quantityToAdd;
-            cart.addItem(product, quantityToAdd);
+            int addableQuantity = Math.min(remainingQuantity, product.getQuantity());
+            remainingQuantity -= addableQuantity;
+            cart.addItem(product, addableQuantity);
         }
     }
 }

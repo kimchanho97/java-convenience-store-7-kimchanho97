@@ -37,7 +37,7 @@ public class ProductInputParser {
     }
 
     private static void validateItemFormat(String item) {
-        if (!item.matches("\\[(\\W+)-(\\d+)]")) {
+        if (!item.matches("\\[([a-zA-Z가-힣\\s]+)-(\\d+)]")) {
             throw new InputException(INVALID_INPUT_FORMAT);
         }
     }
