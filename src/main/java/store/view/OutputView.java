@@ -50,43 +50,30 @@ public class OutputView {
     }
 
     public void displayReceipt(Receipt receipt) {
-        List<ProductSummary> productSummaries = receipt.getProductSummaries();
-        List<PromotionSummary> promotionSummaries = receipt.getPromotionSummaries();
-
         System.out.println("==============W 편의점================");
-        System.out.println("상품명              수량      금액");
-
-        for (ProductSummary summary : productSummaries) {
-            System.out.printf("%-15s %5d %10s원%n",
-                    summary.name(),
-                    summary.quantity(),
-                    String.format("%,d", summary.totalPrice())
-            );
-        }
+        System.out.printf("%-18s%s%10s%n", "상품명", "수량", "금액");
+        displayProductSummaries(receipt.getProductSummaries());
 
         System.out.println("=============증     정===============");
-        for (PromotionSummary promotion : promotionSummaries) {
-            System.out.printf("%-15s %5d%n", promotion.name(), promotion.quantity());
-        }
+        displayPromotionSummaries(receipt.getPromotionSummaries());
 
         System.out.println("====================================");
+        System.out.printf("%-19s%d%,14d%n", "총구매액", receipt.getTotalQuantity(), receipt.getTotalAmount());
+        System.out.printf("%-28s-%,d%n", "행사할인", receipt.getPromotionDiscount());
+        System.out.printf("%-28s-%,d%n", "멤버십할인", receipt.getMembershipDiscount());
+        System.out.printf("%-30s%,d%n", "내실돈", receipt.getFinalAmount());
+    }
 
-        System.out.printf("총구매액          %10d %10s원%n",
-                receipt.getTotalQuantity(),
-                String.format("%,d", receipt.getTotalAmount())
-        );
+    private void displayProductSummaries(List<ProductSummary> productSummaries) {
+        for (ProductSummary summary : productSummaries) {
+            System.out.printf("%-19s%,d%,14d%n", summary.name(), summary.quantity(), summary.totalPrice());
+        }
+    }
 
-        System.out.printf("행사할인                    -%10s원%n",
-                String.format("%,d", receipt.getPromotionDiscount())
-        );
-
-        System.out.printf("멤버십할인                 -%10s원%n",
-                receipt.getMembershipDiscount() == 0 ? "0" : String.format("%,d", receipt.getMembershipDiscount())
-        );
-
-        System.out.printf("내실돈                      %10s원%n",
-                String.format("%,d", receipt.getFinalAmount())
-        );
+    private void displayPromotionSummaries(List<PromotionSummary> promotionSummaries) {
+        for (PromotionSummary promotion : promotionSummaries) {
+            System.out.printf("%-19s%,d%n", promotion.name(), promotion.quantity());
+        }
     }
 
 }
