@@ -1,14 +1,17 @@
 package store.domain;
 
-import java.time.LocalDate;
+import static store.exception.message.CartExceptionMessage.EXCEEDS_STOCK_QUANTITY;
+
+import java.time.LocalDateTime;
 import java.util.Objects;
+import store.exception.CustomException.ExceedStockQuantityException;
 
 public class Product implements Comparable<Product> {
 
     private final String name;
     private final int price;
-    private final int quantity;
     private final Promotion promotion;
+    private int quantity;
 
     public Product(String name, int price, int quantity, Promotion promotion) {
         this.name = name;
@@ -17,8 +20,8 @@ public class Product implements Comparable<Product> {
         this.promotion = promotion;
     }
 
-    public boolean hasActivePromotion(LocalDate date) {
-        return promotion != null && promotion.isActivePromotion(date);
+    public boolean hasActivePromotion(LocalDateTime date) {
+        return promotion != null && promotion.isActive(date);
     }
 
     public int calculateMaxPromotionQuantity(int requestedQuantity) {
@@ -38,6 +41,20 @@ public class Product implements Comparable<Product> {
         return Math.min(quantity / promotionSetSize, applicablePromotionSets) * promotionSetSize;
     }
 
+    public int calculateTotalAmount(int requestedQuantity) {
+        return price * requestedQuantity;
+    }
+
+    public void reduceStock(int requestedQuantity) {
+        if (quantity < requestedQuantity) {
+            throw new ExceedStockQuantityException(EXCEEDS_STOCK_QUANTITY);
+        }
+        quantity -= requestedQuantity;
+    }
+
+    public int getPromotionQuantity(int requestedQuantity) {
+        return promotion.calculateFreeQuantity(requestedQuantity);
+    }
 
     public String getName() {
         return name;
