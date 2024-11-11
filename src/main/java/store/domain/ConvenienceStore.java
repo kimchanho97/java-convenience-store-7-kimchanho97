@@ -16,6 +16,24 @@ public class ConvenienceStore {
     public ConvenienceStore() {
         this.inventory = new LinkedHashMap<>();
         loadProductsFromFile();
+        addMissingDefaultProducts();
+    }
+
+    private void addMissingDefaultProducts() {
+        inventory.forEach((name, products) -> {
+            if (needsDefaultProduct(products)) {
+                addDefaultProduct(products);
+            }
+        });
+    }
+
+    private boolean needsDefaultProduct(List<Product> products) {
+        return products.stream().noneMatch(product -> product.getPromotion() == null);
+    }
+
+    private void addDefaultProduct(List<Product> products) {
+        Product promoProduct = products.getFirst();
+        products.add(new Product(promoProduct.getName(), promoProduct.getPrice(), 0, null));
     }
 
     public boolean hasProductByName(String name) {
