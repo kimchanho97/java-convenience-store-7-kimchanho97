@@ -2,8 +2,6 @@ package store.service;
 
 import static store.constant.Answer.NO;
 import static store.constant.Answer.YES;
-import static store.exception.message.CartExceptionMessage.EXCEEDS_STOCK_QUANTITY;
-import static store.exception.message.CartExceptionMessage.NOT_FOUND_PRODUCT;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -14,8 +12,6 @@ import store.constant.Answer;
 import store.domain.Cart;
 import store.domain.ConvenienceStore;
 import store.domain.Product;
-import store.exception.CustomException.ExceedStockQuantityException;
-import store.exception.CustomException.NotFoundProductException;
 
 public class CartService {
 
@@ -25,17 +21,13 @@ public class CartService {
         this.store = store;
     }
 
-    public void addItemToCart(
-            Cart cart, Map<String, Integer> itemsToBuy,
-            BiFunction<String, Integer, Answer> askToApplyPromotion,
-            BiFunction<String, Integer, Answer> askToProceedWithoutPromotion
-    ) {
-        for (Entry<String, Integer> entry : itemsToBuy.entrySet()) {
+    public void addItemToCart(Cart cart, Map<String, Integer> itemsToPurchase,
+                              BiFunction<String, Integer, Answer> askToApplyPromotion,
+                              BiFunction<String, Integer, Answer> askToProceedWithoutPromotion) {
+        
+        for (Entry<String, Integer> entry : itemsToPurchase.entrySet()) {
             String name = entry.getKey();
             Integer quantityToPurchase = entry.getValue();
-
-            checkProductExists(name);
-            checkSufficientStockForPurchase(name, quantityToPurchase);
 
             List<Product> products = store.getProductsByName(name);
             int finalQuantity = determinePurchaseQuantityWithPromotion(products, quantityToPurchase, name,
@@ -45,11 +37,10 @@ public class CartService {
         }
     }
 
-    private int determinePurchaseQuantityWithPromotion(
-            List<Product> products, Integer requestedQuantity, String name,
-            BiFunction<String, Integer, Answer> askToApplyPromotion,
-            BiFunction<String, Integer, Answer> askToProceedWithoutPromotion
-    ) {
+    private int determinePurchaseQuantityWithPromotion(List<Product> products, Integer requestedQuantity, String name,
+                                                       BiFunction<String, Integer, Answer> askToApplyPromotion,
+                                                       BiFunction<String, Integer, Answer> askToProceedWithoutPromotion) {
+
         for (Product product : products) {
             if (!product.hasActivePromotion(LocalDate.now())) {
                 continue;
@@ -82,18 +73,6 @@ public class CartService {
             int quantityToAdd = Math.min(remainingQuantity, product.getQuantity());
             cart.addCart(product, quantityToAdd);
             remainingQuantity -= quantityToAdd;
-        }
-    }
-
-    private void checkSufficientStockForPurchase(String name, Integer quantityToPurchase) {
-        if (!store.hasAvailableQuantity(name, quantityToPurchase)) {
-            throw new ExceedStockQuantityException(EXCEEDS_STOCK_QUANTITY);
-        }
-    }
-
-    private void checkProductExists(String name) {
-        if (!store.hasProductByName(name)) {
-            throw new NotFoundProductException(NOT_FOUND_PRODUCT);
         }
     }
 }
