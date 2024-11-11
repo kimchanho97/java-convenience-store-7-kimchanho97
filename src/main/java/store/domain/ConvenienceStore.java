@@ -16,28 +16,22 @@ public class ConvenienceStore {
     public ConvenienceStore() {
         this.inventory = new LinkedHashMap<>();
         loadProductsFromFile();
-        addMissingDefaultProducts();
+        addDefaultProducts();
     }
 
-    private void addMissingDefaultProducts() {
-        inventory.forEach((name, products) -> {
-            if (needsDefaultProduct(products)) {
-                addDefaultProduct(products);
-            }
-        });
-    }
-
-    private boolean needsDefaultProduct(List<Product> products) {
-        return products.stream().noneMatch(product -> product.getPromotion() == null);
-    }
-
-    private void addDefaultProduct(List<Product> products) {
-        Product promoProduct = products.getFirst();
-        products.add(new Product(promoProduct.getName(), promoProduct.getPrice(), 0, null));
-    }
-
-    public boolean hasProductByName(String name) {
+    public boolean hasProduct(String name) {
         return inventory.containsKey(name);
+    }
+
+    public boolean hasSufficientQuantity(String name, Integer quantityToPurchase) {
+        int sum = inventory.get(name).stream()
+                .mapToInt(Product::getQuantity)
+                .sum();
+        return sum >= quantityToPurchase;
+    }
+
+    public List<Product> getProducts(String name) {
+        return inventory.get(name).stream().sorted().toList();
     }
 
     public Map<String, List<Product>> getInventory() {
@@ -46,43 +40,48 @@ public class ConvenienceStore {
 
     private void loadProductsFromFile() {
         try (BufferedReader br = new BufferedReader(new FileReader("src/main/resources/products.md"))) {
-            String line = br.readLine();
-
-            while ((line = br.readLine()) != null) {
-                String[] fields = line.split(",");
-
-                String name = fields[0];
-                int price = Integer.parseInt(fields[1]);
-                int quantity = Integer.parseInt(fields[2]);
-                String promotionName = fields[3];
-
-                Promotion promotion = findPromotionByName(promotionName);
-
-                inventory.computeIfAbsent(name, key -> new ArrayList<>())
-                        .add(new Product(name, price, quantity, promotion));
-            }
+            br.lines().skip(1).forEach(this::parseAndAddProduct);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    private void parseAndAddProduct(String line) {
+        String[] fields = line.split(",");
+
+        String name = fields[0];
+        int price = Integer.parseInt(fields[1]);
+        int quantity = Integer.parseInt(fields[2]);
+        String promotionName = fields[3];
+
+        Promotion promotion = findPromotionByName(promotionName);
+        addProductToInventory(name, price, quantity, promotion);
+    }
+
     private Promotion findPromotionByName(String name) {
-        PromotionManager promotions = PromotionManager.getInstance();
-        if (name.equals("null")) {
-            return null;
-        }
-        return promotions.getPromotion(name);
+        return PromotionManager.getInstance().findPromotionByName(name);
     }
 
-    public boolean hasAvailableQuantity(String name, Integer quantityToBoy) {
-        int sum = inventory.get(name).stream()
-                .mapToInt(Product::getQuantity)
-                .sum();
-        return sum >= quantityToBoy;
+    private void addProductToInventory(String name, int price, int quantity, Promotion promotion) {
+        inventory.computeIfAbsent(name, key -> new ArrayList<>())
+                .add(new Product(name, price, quantity, promotion));
     }
 
-    public List<Product> getProductsByName(String name) {
-        return inventory.get(name).stream().sorted().toList();
+    private void addDefaultProducts() {
+        inventory.forEach((name, products) -> {
+            if (hasOnlyPromotionProducts(products)) {
+                addDefaultProduct(products);
+            }
+        });
+    }
+
+    private boolean hasOnlyPromotionProducts(List<Product> products) {
+        return products.stream().noneMatch(product -> product.getPromotion() == null);
+    }
+
+    private void addDefaultProduct(List<Product> products) {
+        Product promoProduct = products.getFirst();
+        products.add(new Product(promoProduct.getName(), promoProduct.getPrice(), 0, null));
     }
 
 }

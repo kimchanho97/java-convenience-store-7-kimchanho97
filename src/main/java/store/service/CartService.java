@@ -21,15 +21,15 @@ public class CartService {
         this.store = store;
     }
 
-    public void addItemToCart(Cart cart, Map<String, Integer> itemsToPurchase,
-                              BiFunction<String, Integer, Answer> askToApplyPromotion,
-                              BiFunction<String, Integer, Answer> askToProceedWithoutPromotion) {
+    public void addItemsToCart(Cart cart, Map<String, Integer> itemsToPurchase,
+                               BiFunction<String, Integer, Answer> askToApplyPromotion,
+                               BiFunction<String, Integer, Answer> askToProceedWithoutPromotion) {
 
         for (Entry<String, Integer> entry : itemsToPurchase.entrySet()) {
             String name = entry.getKey();
             Integer quantityToPurchase = entry.getValue();
 
-            List<Product> products = store.getProductsByName(name);
+            List<Product> products = store.getProducts(name);
             int finalQuantity = determinePurchaseQuantityWithPromotion(products, quantityToPurchase, name,
                     askToApplyPromotion, askToProceedWithoutPromotion);
 

@@ -47,7 +47,7 @@ class CartServiceTest {
         itemsToBuy.put("콜라", before);
 
         // When
-        cartService.addItemToCart(
+        cartService.addItemsToCart(
                 cart,
                 itemsToBuy,
                 (name, quantity) -> YES,  // 프로모션 추가 허용
@@ -80,7 +80,7 @@ class CartServiceTest {
         itemsToBuy.put("콜라", before);
 
         // When
-        cartService.addItemToCart(
+        cartService.addItemsToCart(
                 cart,
                 itemsToBuy,
                 (name, quantity) -> NO,  // 프로모션 추가 허용
@@ -113,7 +113,7 @@ class CartServiceTest {
         itemsToBuy.put("콜라", before);
 
         // When
-        cartService.addItemToCart(
+        cartService.addItemsToCart(
                 cart,
                 itemsToBuy,
                 (name, quantity) -> YES,  // 프로모션 추가 허용
@@ -146,7 +146,7 @@ class CartServiceTest {
         itemsToBuy.put("콜라", before);
 
         // When
-        cartService.addItemToCart(
+        cartService.addItemsToCart(
                 cart,
                 itemsToBuy,
                 (name, quantity) -> NO,  // 프로모션 추가 허용

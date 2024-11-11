@@ -20,32 +20,32 @@ public class PromotionManager {
         loadPromotionsFromFile();
     }
 
+    public static PromotionManager getInstance() {
+        return PromotionManagerHolder.INSTANCE;
+    }
+
+    public Promotion findPromotionByName(String name) {
+        return promotions.getOrDefault(name, null);
+    }
+
     private void loadPromotionsFromFile() {
         try (BufferedReader br = new BufferedReader(new FileReader("src/main/resources/promotions.md"))) {
-            String line = br.readLine();
-
-            while ((line = br.readLine()) != null) {
-                String[] fields = line.split(",");
-
-                String name = fields[0];
-                int buy = Integer.parseInt(fields[1]);
-                int get = Integer.parseInt(fields[2]);
-                LocalDateTime startDate = LocalDate.parse(fields[3]).atStartOfDay();
-                LocalDateTime endDate = LocalDate.parse(fields[4]).atStartOfDay();
-
-                promotions.put(name, new Promotion(name, buy, get, startDate, endDate));
-            }
+            br.lines().skip(1).forEach(this::parseAndAddPromotion);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public static PromotionManager getInstance() {
-        return PromotionManagerHolder.INSTANCE;
-    }
+    private void parseAndAddPromotion(String line) {
+        String[] fields = line.split(",");
 
-    public Promotion getPromotion(String name) {
-        return promotions.get(name);
+        String name = fields[0];
+        int buy = Integer.parseInt(fields[1]);
+        int get = Integer.parseInt(fields[2]);
+        LocalDateTime startDate = LocalDate.parse(fields[3]).atStartOfDay();
+        LocalDateTime endDate = LocalDate.parse(fields[4]).atStartOfDay();
+
+        promotions.put(name, new Promotion(name, buy, get, startDate, endDate));
     }
 
 }

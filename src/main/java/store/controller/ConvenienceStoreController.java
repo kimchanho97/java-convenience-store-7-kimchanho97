@@ -36,26 +36,21 @@ public class ConvenienceStoreController {
     public void run() {
         do {
             outputView.displayConvenienceStore(store);
-            Map<String, Integer> itemsToPurchase = exceptionHandler.retry(() -> {
-                Map<String, Integer> items = inputView.inputProductNameAndQuantity();
-                validatePurchaseItems(items);
-                return items;
-            });
+            Map<String, Integer> itemsToPurchase = getValidatedItemsToPurchase();
 
-            Cart cart = new Cart();
-            cartService.addItemToCart(
-                    cart,
-                    itemsToPurchase,
-                    exceptionHandler.retry(inputView::askToApplyPromotion),
-                    exceptionHandler.retry(inputView::askToProceedWithoutPromotion)
-            );
+            Cart cart = addItemsToCart(itemsToPurchase);
+            Receipt receipt = processCheckout(cart);
 
-            Answer isMembershipDiscount = exceptionHandler.retry(inputView::askToApplyMembership);
-            PaymentService paymentService = new PaymentService(isMembershipDiscount, cart);
-            Receipt receipt = paymentService.checkout();
-            
             outputView.displayReceipt(receipt);
-        } while (exceptionHandler.retry(inputView::askAdditionalPurchase) == YES);
+        } while (hasAdditionalPurchase());
+    }
+
+    private Map<String, Integer> getValidatedItemsToPurchase() {
+        return exceptionHandler.retry(() -> {
+            Map<String, Integer> items = inputView.inputProductNameAndQuantity();
+            validatePurchaseItems(items);
+            return items;
+        });
     }
 
     private void validatePurchaseItems(Map<String, Integer> itemsToPurchase) {
@@ -65,15 +60,33 @@ public class ConvenienceStoreController {
         }
     }
 
+    private void checkProductExists(String name) {
+        if (!store.hasProduct(name)) {
+            throw new NotFoundProductException(NOT_FOUND_PRODUCT);
+        }
+    }
+
     private void checkSufficientStockForPurchase(String name, Integer quantityToPurchase) {
-        if (!store.hasAvailableQuantity(name, quantityToPurchase)) {
+        if (!store.hasSufficientQuantity(name, quantityToPurchase)) {
             throw new ExceedStockQuantityException(EXCEEDS_STOCK_QUANTITY);
         }
     }
 
-    private void checkProductExists(String name) {
-        if (!store.hasProductByName(name)) {
-            throw new NotFoundProductException(NOT_FOUND_PRODUCT);
-        }
+    private Cart addItemsToCart(Map<String, Integer> itemsToPurchase) {
+        Cart cart = new Cart();
+        cartService.addItemsToCart(cart, itemsToPurchase,
+                exceptionHandler.retry(inputView::askToApplyPromotion),
+                exceptionHandler.retry(inputView::askToProceedWithoutPromotion));
+        return cart;
     }
+
+    private Receipt processCheckout(Cart cart) {
+        Answer isMembershipDiscount = exceptionHandler.retry(inputView::askToApplyMembership);
+        return new PaymentService(isMembershipDiscount, cart).checkout();
+    }
+
+    private boolean hasAdditionalPurchase() {
+        return exceptionHandler.retry(inputView::askAdditionalPurchase) == YES;
+    }
+
 }
