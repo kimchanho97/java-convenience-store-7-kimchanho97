@@ -1,7 +1,6 @@
 package store.domain;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,40 +27,37 @@ public class Receipt {
     }
 
     public List<ProductSummary> getProductSummaries() {
-        Map<String, ProductSummary> summaryMap = new LinkedHashMap<>();
+        Map<String, ProductSummary> productSummaries = new LinkedHashMap<>();
 
         for (Map.Entry<Product, Integer> entry : items.entrySet()) {
             Product product = entry.getKey();
             int quantity = entry.getValue();
             int totalPrice = product.getPrice() * quantity;
 
-            summaryMap.merge(
-                    product.getName(),
-                    new ProductSummary(product.getName(), quantity, totalPrice),
-                    (existing, newEntry) -> new ProductSummary(
-                            existing.name(),
+            productSummaries.merge(product.getName(), new ProductSummary(product.getName(), quantity, totalPrice),
+                    (existing, newEntry) -> new ProductSummary(existing.name(),
                             existing.quantity() + newEntry.quantity(),
                             existing.totalPrice() + newEntry.totalPrice()
                     )
             );
         }
-        return new ArrayList<>(summaryMap.values());
+        return new ArrayList<>(productSummaries.values());
     }
 
 
     public List<PromotionSummary> getPromotionSummaries() {
-        Map<String, Integer> promotionMap = new HashMap<>();
+        Map<String, Integer> promotionSummaries = new LinkedHashMap<>();
 
         for (Map.Entry<Product, Integer> entry : items.entrySet()) {
             Product product = entry.getKey();
             int quantity = entry.getValue();
             if (product.getPromotion() != null) {
                 int freeQuantity = product.getFreeQuantity(quantity);
-                promotionMap.merge(product.getName(), freeQuantity, Integer::sum);
+                promotionSummaries.merge(product.getName(), freeQuantity, Integer::sum);
             }
         }
 
-        return promotionMap.entrySet().stream()
+        return promotionSummaries.entrySet().stream()
                 .filter(entry -> entry.getValue() > 0)
                 .map(entry -> new PromotionSummary(entry.getKey(), entry.getValue()))
                 .toList();

@@ -48,12 +48,12 @@ public class ConvenienceStoreController {
     private Map<String, Integer> getValidatedItemsToPurchase() {
         return exceptionHandler.retry(() -> {
             Map<String, Integer> items = inputView.inputProductNameAndQuantity();
-            validatePurchaseItems(items);
+            validateItemsToPurchase(items);
             return items;
         });
     }
 
-    private void validatePurchaseItems(Map<String, Integer> itemsToPurchase) {
+    private void validateItemsToPurchase(Map<String, Integer> itemsToPurchase) {
         for (Map.Entry<String, Integer> entry : itemsToPurchase.entrySet()) {
             checkProductExists(entry.getKey());
             checkSufficientQuantityForPurchase(entry.getKey(), entry.getValue());
