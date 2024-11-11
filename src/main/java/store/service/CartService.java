@@ -3,7 +3,7 @@ package store.service;
 import static store.constant.Answer.NO;
 import static store.constant.Answer.YES;
 
-import java.time.LocalDate;
+import camp.nextstep.edu.missionutils.DateTimes;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -24,7 +24,7 @@ public class CartService {
     public void addItemToCart(Cart cart, Map<String, Integer> itemsToPurchase,
                               BiFunction<String, Integer, Answer> askToApplyPromotion,
                               BiFunction<String, Integer, Answer> askToProceedWithoutPromotion) {
-        
+
         for (Entry<String, Integer> entry : itemsToPurchase.entrySet()) {
             String name = entry.getKey();
             Integer quantityToPurchase = entry.getValue();
@@ -42,7 +42,7 @@ public class CartService {
                                                        BiFunction<String, Integer, Answer> askToProceedWithoutPromotion) {
 
         for (Product product : products) {
-            if (!product.hasActivePromotion(LocalDate.now())) {
+            if (!product.hasActivePromotion(DateTimes.now())) {
                 continue;
             }
 
@@ -63,7 +63,7 @@ public class CartService {
         return requestedQuantity;
     }
 
-    private static void addProductToCart(Cart cart, int finalQuantity, List<Product> products) {
+    private void addProductToCart(Cart cart, int finalQuantity, List<Product> products) {
         int remainingQuantity = finalQuantity;
         for (Product product : products) {
             if (remainingQuantity <= 0) {
@@ -71,7 +71,7 @@ public class CartService {
             }
 
             int quantityToAdd = Math.min(remainingQuantity, product.getQuantity());
-            cart.addCart(product, quantityToAdd);
+            cart.addItem(product, quantityToAdd);
             remainingQuantity -= quantityToAdd;
         }
     }

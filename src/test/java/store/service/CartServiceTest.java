@@ -55,7 +55,7 @@ class CartServiceTest {
         );
 
         // Then
-        int totalQuantityInCart = cart.getCart().values().stream().mapToInt(Integer::intValue).sum();
+        int totalQuantityInCart = cart.getItems().values().stream().mapToInt(Integer::intValue).sum();
         Assertions.assertThat(totalQuantityInCart).isEqualTo(after);
     }
 
@@ -88,7 +88,7 @@ class CartServiceTest {
         );
 
         // Then
-        int totalQuantityInCart = cart.getCart().values().stream().mapToInt(Integer::intValue).sum();
+        int totalQuantityInCart = cart.getItems().values().stream().mapToInt(Integer::intValue).sum();
         Assertions.assertThat(totalQuantityInCart).isEqualTo(after);
     }
 
@@ -121,7 +121,7 @@ class CartServiceTest {
         );
 
         // Then
-        int totalQuantityInCart = cart.getCart().values().stream().mapToInt(Integer::intValue).sum();
+        int totalQuantityInCart = cart.getItems().values().stream().mapToInt(Integer::intValue).sum();
         Assertions.assertThat(totalQuantityInCart).isEqualTo(after);
     }
 
@@ -154,7 +154,7 @@ class CartServiceTest {
         );
 
         // Then
-        int totalQuantityInCart = cart.getCart().values().stream().mapToInt(Integer::intValue).sum();
+        int totalQuantityInCart = cart.getItems().values().stream().mapToInt(Integer::intValue).sum();
         Assertions.assertThat(totalQuantityInCart).isEqualTo(after);
     }
 

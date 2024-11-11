@@ -82,6 +82,7 @@ public class ConvenienceStore {
     }
 
     public List<Product> getProductsByName(String name) {
-        return Collections.unmodifiableList(inventory.get(name));
+        return inventory.get(name).stream().sorted().toList();
     }
+
 }

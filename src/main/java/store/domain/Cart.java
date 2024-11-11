@@ -5,17 +5,17 @@ import java.util.Map;
 
 public class Cart {
 
-    private final Map<Product, Integer> cart;
+    private final Map<Product, Integer> items;
 
     public Cart() {
-        cart = new LinkedHashMap<>();
+        items = new LinkedHashMap<>();
     }
 
-    public void addCart(Product product, int quantity) {
-        cart.put(product, quantity);
+    public void addItem(Product product, int quantity) {
+        items.put(product, quantity);
     }
 
-    public Map<Product, Integer> getCart() {
-        return cart;
+    public Map<Product, Integer> getItems() {
+        return items;
     }
 }

@@ -5,6 +5,9 @@ import java.util.Map;
 import store.domain.ConvenienceStore;
 import store.domain.Product;
 import store.domain.Promotion;
+import store.domain.Receipt;
+import store.dto.ProductSummary;
+import store.dto.PromotionSummary;
 
 public class OutputView {
 
@@ -45,5 +48,45 @@ public class OutputView {
     public void printExceptionMessage(String message) {
         System.out.println(message);
     }
-    
+
+    public void displayReceipt(Receipt receipt) {
+        List<ProductSummary> productSummaries = receipt.getProductSummaries();
+        List<PromotionSummary> promotionSummaries = receipt.getPromotionSummaries();
+
+        System.out.println("==============W 편의점================");
+        System.out.println("상품명              수량      금액");
+
+        for (ProductSummary summary : productSummaries) {
+            System.out.printf("%-15s %5d %10s원%n",
+                    summary.name(),
+                    summary.quantity(),
+                    String.format("%,d", summary.totalPrice())
+            );
+        }
+
+        System.out.println("=============증     정===============");
+        for (PromotionSummary promotion : promotionSummaries) {
+            System.out.printf("%-15s %5d%n", promotion.name(), promotion.quantity());
+        }
+
+        System.out.println("====================================");
+
+        System.out.printf("총구매액          %10d %10s원%n",
+                receipt.getTotalQuantity(),
+                String.format("%,d", receipt.getTotalAmount())
+        );
+
+        System.out.printf("행사할인                    -%10s원%n",
+                String.format("%,d", receipt.getPromotionDiscount())
+        );
+
+        System.out.printf("멤버십할인                 -%10s원%n",
+                receipt.getMembershipDiscount() == 0 ? "0" : String.format("%,d", receipt.getMembershipDiscount())
+        );
+
+        System.out.printf("내실돈                      %10s원%n",
+                String.format("%,d", receipt.getFinalAmount())
+        );
+    }
+
 }
