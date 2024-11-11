@@ -28,14 +28,14 @@ public class OutputView {
         String stockInfo = getStockInfo(product.getQuantity());
         String promotionInfo = getPromotionInfo(product.getPromotion());
 
-        System.out.printf("- %s %,d원 %s개 %s%n", product.getName(), product.getPrice(), stockInfo, promotionInfo);
+        System.out.printf("- %s %,d원 %s %s%n", product.getName(), product.getPrice(), stockInfo, promotionInfo);
     }
 
     private String getStockInfo(int quantity) {
         if (quantity == 0) {
             return "재고 없음";
         }
-        return String.valueOf(quantity);
+        return quantity + "개";
     }
 
     private String getPromotionInfo(Promotion promotion) {
