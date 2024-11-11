@@ -21,4 +21,16 @@ public class Promotion {
     public String getName() {
         return name;
     }
+
+    public int getBuy() {
+        return buy;
+    }
+
+    public int getGet() {
+        return get;
+    }
+
+    public boolean isActivePromotion(LocalDate date) {
+        return date.isAfter(startDate) && date.isBefore(endDate);
+    }
 }

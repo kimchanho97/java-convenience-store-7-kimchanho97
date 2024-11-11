@@ -18,6 +18,14 @@ public class ConvenienceStore {
         loadProductsFromFile();
     }
 
+    public boolean hasProductByName(String name) {
+        return inventory.containsKey(name);
+    }
+
+    public Map<String, List<Product>> getInventory() {
+        return Collections.unmodifiableMap(inventory);
+    }
+
     private void loadProductsFromFile() {
         try (BufferedReader br = new BufferedReader(new FileReader("src/main/resources/products.md"))) {
             String line = br.readLine();
@@ -40,10 +48,6 @@ public class ConvenienceStore {
         }
     }
 
-    public Map<String, List<Product>> getInventory() {
-        return Collections.unmodifiableMap(inventory);
-    }
-
     private Promotion findPromotionByName(String name) {
         PromotionManager promotions = PromotionManager.getInstance();
         if (name.equals("null")) {
@@ -52,4 +56,14 @@ public class ConvenienceStore {
         return promotions.getPromotion(name);
     }
 
+    public boolean hasAvailableQuantity(String name, Integer quantityToBoy) {
+        int sum = inventory.get(name).stream()
+                .mapToInt(Product::getQuantity)
+                .sum();
+        return sum >= quantityToBoy;
+    }
+
+    public List<Product> getProductsByName(String name) {
+        return Collections.unmodifiableList(inventory.get(name));
+    }
 }

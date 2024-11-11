@@ -16,4 +16,17 @@ public class CustomException extends IllegalArgumentException {
         }
     }
 
+    public static class NotFoundProductException extends CustomException {
+        public NotFoundProductException(ExceptionMessage message) {
+            super(message);
+        }
+    }
+
+    public static class ExceedStockQuantityException extends CustomException {
+
+        public ExceedStockQuantityException(ExceptionMessage message) {
+            super(message);
+        }
+    }
+
 }
