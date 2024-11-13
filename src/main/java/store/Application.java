@@ -16,3 +16,4 @@ public class Application {
         new ConvenienceStoreController(store, inputView, outputView, exceptionHandler).run();
     }
 }
+
